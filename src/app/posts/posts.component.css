@@ -1,0 +1,7 @@
+i {
+  margin-right: 10px;
+  color: #c1c1c1;
+}
+.btn:focus {
+  box-shadow: 0 0 0 2px rgba(0,123,255,.25)
+}

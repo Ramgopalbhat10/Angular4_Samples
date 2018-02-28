@@ -1,0 +1,9 @@
+.alert {
+  padding: 5px 0;
+  border: none;
+  border-radius: 0;
+}
+.alert-danger {
+  background: none;
+  color: #dc3545;
+}
