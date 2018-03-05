@@ -17,36 +17,29 @@ export class PostsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.service.getPosts()
-      .subscribe(
-        response => {
-          this.posts = response.json();
-        }, 
-        error => {
-          alert("An unexpexted error occured.");
-          console.log(error);
-      });
+    this.service.getAll()
+      .subscribe(posts => this.posts = posts);
   }
 
   createPost(input: HTMLInputElement) {
     let post: any = { title: input.value };
+    this.posts.splice(0, 0, post);
+    
     input.value = '';
 
-    this.service.createPost(post)
+    this.service.create(post)
       .subscribe(
-        response => {
-          post.id = response.json().id;
-          console.log(response.json());
-          this.posts.splice(0, 0, post);
+        newPost => {
+          post.id = newPost.id;
+          console.log(newPost);
         }, 
         (error: AppError) => {
+          this.posts.splice(0, 1);
+
           if(error instanceof BadIput) {
             //some code
           }
-          else {
-            alert("An unexpexted error occured.");
-            console.log(error);
-          }
+          else throw error;
       });
   }
 
@@ -61,31 +54,26 @@ export class PostsComponent implements OnInit {
       check.title = "Mark as Read";
     }
 
-    this.service.createPost(post)
+    this.service.update(post)
       .subscribe(
-        response => {
-          console.log(response.json());
-        }, 
-        error => {
-          alert("An unexpexted error occured.");
-          console.log(error);
-      });
+        updatedPost => {
+          console.log(updatedPost);
+        });
   }
 
   deletePost(post){
-    this.service.deletePost(post.id)
+    let index = this.posts.indexOf(post);
+    this.posts.splice(index, 1);
+
+    this.service.delete(post.id)
       .subscribe(
-        response => {
-          let index = this.posts.indexOf(post);
-          this.posts.splice(index, 1);
-        }, 
+        null, 
         (error: AppError) => {
+          this.posts.splice(index, 0, post);
+
           if(error instanceof NotFoundError)
             alert("This post has already been deleted");
-          else {
-            alert("An unexpexted error occured.");
-            console.log(error);
-          }
+          else throw error;
       });
     
   }
