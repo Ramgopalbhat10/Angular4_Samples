@@ -1,20 +1,30 @@
+import { BadIput } from './../common/bad-input';
+import { NotFoundError } from './../common/not-found-error';
+import { AppError } from './../common/app-error';
 import { Component, OnInit } from '@angular/core';
-import { Http } from '@angular/http';
+import { PostService } from '../services/post.service';
 
 @Component({
   selector: 'posts',
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css']
 })
-export class PostsComponent {
+export class PostsComponent implements OnInit {
   posts: any[];
   isRead: boolean = false;
-  private url = "https://jsonplaceholder.typicode.com/posts";
+  
+  constructor(private service: PostService) {
+  }
 
-  constructor(private http: Http) {
-    http.get(this.url)
-      .subscribe((response) => {
-        this.posts = response.json();
+  ngOnInit() {
+    this.service.getPosts()
+      .subscribe(
+        response => {
+          this.posts = response.json();
+        }, 
+        error => {
+          alert("An unexpexted error occured.");
+          console.log(error);
       });
   }
 
@@ -22,16 +32,27 @@ export class PostsComponent {
     let post: any = { title: input.value };
     input.value = '';
 
-    this.http.post(this.url, JSON.stringify(post))
-      .subscribe(response => {
-        post.id = response.json().id;
-        this.posts.splice(0, 0, post);
+    this.service.createPost(post)
+      .subscribe(
+        response => {
+          post.id = response.json().id;
+          console.log(response.json());
+          this.posts.splice(0, 0, post);
+        }, 
+        (error: AppError) => {
+          if(error instanceof BadIput) {
+            //some code
+          }
+          else {
+            alert("An unexpexted error occured.");
+            console.log(error);
+          }
       });
   }
 
   updatePost(post, check, listItem) {
     if(check.title === "Mark as Read") {
-      check.style.color = "#4caf50";
+      check.style.color = "#66BB6A";
       listItem.style.background = "#4caf502e";
       check.title = "Mark as Unread";
     } else if(check.title === "Mark as Unread") {
@@ -40,9 +61,32 @@ export class PostsComponent {
       check.title = "Mark as Read";
     }
 
-    this.http.patch(this.url + '/' + post.id, JSON.stringify({ isRead: true }))
-      .subscribe(response => {
-        console.log(response.json());
+    this.service.createPost(post)
+      .subscribe(
+        response => {
+          console.log(response.json());
+        }, 
+        error => {
+          alert("An unexpexted error occured.");
+          console.log(error);
       });
+  }
+
+  deletePost(post){
+    this.service.deletePost(post.id)
+      .subscribe(
+        response => {
+          let index = this.posts.indexOf(post);
+          this.posts.splice(index, 1);
+        }, 
+        (error: AppError) => {
+          if(error instanceof NotFoundError)
+            alert("This post has already been deleted");
+          else {
+            alert("An unexpexted error occured.");
+            console.log(error);
+          }
+      });
+    
   }
 }

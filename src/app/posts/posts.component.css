@@ -1,7 +1,19 @@
+input {
+  margin-bottom: 10px;
+}
 i {
   margin-right: 10px;
   color: #c1c1c1;
 }
 .btn:focus {
   box-shadow: 0 0 0 2px rgba(0,123,255,.25)
+}
+.icons, .post-title {
+  display: inline-block;
+}
+.fa-check-circle:hover {
+  color: #66BB6A;
+}
+.fa-trash:hover {
+  color: #EF5350;
 }

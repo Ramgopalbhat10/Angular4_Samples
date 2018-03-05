@@ -3,6 +3,10 @@
   <li *ngFor="let post of posts" class="list-group-item" #listItem>
     <!-- <button type="button" (click)="updatePost(post, listItem, button)" 
       class="btn btn-success btn-sm" aria-label="Left Align" #button>Read</button> -->
-    <i (click)="updatePost(post, check, listItem)" class="fa fa-check-circle" title="Mark as Read" #check></i>
-    {{ post.title }}</li>
+    <div class="icons">
+      <i (click)="updatePost(post, check, listItem)" class="fa fa-check-circle" title="Mark as Read" #check></i>
+      <i (click)="deletePost(post)" class="fa fa-trash" title="Delete Post"></i>
+    </div>
+    <p class="post-title">{{ post.title }}</p>
+    </li>
 </ul>
